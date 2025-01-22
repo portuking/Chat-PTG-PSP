@@ -1,6 +1,5 @@
 package chat_servidor.servidor;
 
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -9,27 +8,27 @@ import java.util.LinkedList;
 
 public class HiloCliente extends Thread {
     private final Socket socket;    
-    private ObjectOutputStream objectOutputStream;
-    private ObjectInputStream objectInputStream;            
+    private ObjectOutputStream oos;
+    private ObjectInputStream ois;            
     private final Servidor server;
-    private String identificador;
-    private boolean escuchando;
+    private String id;
+    private boolean listening;
 
     public HiloCliente(Socket socket, Servidor server) {
         this.server = server;
         this.socket = socket;
         try {
-            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            objectInputStream = new ObjectInputStream(socket.getInputStream());
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            ois = new ObjectInputStream(socket.getInputStream());
         } catch (IOException ex) {
             System.err.println("Error en la inicialización del ObjectOutputStream y ObjectInputStream");
         }
     }
 
-    public void desconnectar() {
+    public void desconectar() {
         try {
             socket.close();
-            escuchando = false;
+            listening = false;
         } catch (IOException ex) {
             System.err.println("Error al cerrar el socket de comunicación con el cliente.");
         }
@@ -37,18 +36,18 @@ public class HiloCliente extends Thread {
 
     public void run() {
         try {
-            escuchar();
+            listening();
         } catch (Exception ex) {
             System.err.println("Error al llamar al método readLine del hilo del cliente.");
         }
-        desconnectar();
+        desconectar();
     }
 
-    public void escuchar() {        
-        escuchando = true;
-        while (escuchando) {
+    public void listening() {        
+        listening = true;
+        while (listening) {
             try {
-                Object aux = objectInputStream.readObject();
+                Object aux = ois.readObject();
                 if (aux instanceof LinkedList) {
                     ejecutar((LinkedList<String>) aux);
                 }
@@ -71,7 +70,7 @@ public class HiloCliente extends Thread {
                 String destinatario = lista.get(2);
                 server.clientes
                       .stream()
-                      .filter(h -> destinatario.equals(h.getIdentificador()))
+                      .filter(h -> destinatario.equals(h.getIdent()))
                       .forEach(h -> h.enviarMensaje(lista));
                 break;
             default:
@@ -81,38 +80,38 @@ public class HiloCliente extends Thread {
 
     private void enviarMensaje(LinkedList<String> lista) {
         try {
-            objectOutputStream.writeObject(lista);            
+            oos.writeObject(lista);            
         } catch (Exception e) {
             System.err.println("Error al enviar el objeto al cliente.");
         }
     }    
 
-    private void confirmarConexion(String identificador) {
+    private void confirmarConexion(String id) {
         Servidor.correlativo++;
-        this.identificador = Servidor.correlativo + " - " + identificador;
+        this.id = Servidor.correlativo + " - " + id;
         LinkedList<String> lista = new LinkedList<>();
         lista.add("CONEXION_ACEPTADA");
-        lista.add(this.identificador);
+        lista.add(this.id);
         lista.addAll(server.getUsuariosConectados());
         enviarMensaje(lista);
-        server.agregarLog("\nNuevo cliente: " + this.identificador);
+        server.log("\nNuevo cliente: " + this.id);
         LinkedList<String> auxLista = new LinkedList<>();
         auxLista.add("NUEVO_USUARIO_CONECTADO");
-        auxLista.add(this.identificador);
+        auxLista.add(this.id);
         server.clientes.forEach(cliente -> cliente.enviarMensaje(auxLista));
         server.clientes.add(this);
     }
 
-    public String getIdentificador() {
-        return identificador;
+    public String getIdent() {
+        return id;
     }
 
     private void confirmarDesConexion() {
         LinkedList<String> auxLista=new LinkedList<>();
         auxLista.add("USUARIO_DESCONECTADO");
-        auxLista.add(this.identificador);
-        server.agregarLog("\nEl cliente \""+this.identificador+"\" se ha desconectado.");
-        this.desconnectar();
+        auxLista.add(this.id);
+        server.log("\nEl cliente \""+this.id+"\" se ha desconectado.");
+        this.desconectar();
         for(int i=0;i<server.clientes.size();i++){
             if(server.clientes.get(i).equals(this)){
                 server.clientes.remove(i);

@@ -1,22 +1,22 @@
 package chat_servidor.servidor;
+
 import java.awt.GridLayout;
 import javax.swing.*;
 
 public class VentanaS extends JFrame {
     private final String DEFAULT_PORT = "10101";
-    private final Servidor servidor;
+    private final Servidor server;
+    JTextArea txtClientes = new JTextArea();
 
     public VentanaS() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         String puerto = getPuerto();
-        servidor = new Servidor(puerto, this);
+        server = new Servidor(puerto, this);
     }
 
     private void initComponents() {
         JScrollPane jScrollPane1 = new JScrollPane();
-        JTextArea txtClientes = new JTextArea();
-
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Servidor");
 
@@ -44,7 +44,7 @@ public class VentanaS extends JFrame {
         java.awt.EventQueue.invokeLater(() -> new VentanaS().setVisible(true));
     }
 
-    void agregarLog(String texto) {
+    void log(String texto) {
         txtClientes.append(texto);
     }
 

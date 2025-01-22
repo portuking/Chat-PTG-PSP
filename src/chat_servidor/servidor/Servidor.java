@@ -1,18 +1,19 @@
 package chat_servidor.servidor;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
 import javax.swing.JOptionPane;
 
 public class Servidor extends Thread {    
-    private ServerSocket serverSocket;
+    private ServerSocket socketServer;
     LinkedList<HiloCliente> clientes;
     private final VentanaS ventana;
     private final String puerto;
-    static int correlativo;
+    static int diferenciador;
 
     public Servidor(String puerto, VentanaS ventana) {
-        correlativo = 0;
+        diferenciador = 0;
         this.puerto = puerto;
         this.ventana = ventana;
         clientes = new LinkedList<>();
@@ -21,10 +22,10 @@ public class Servidor extends Thread {
 
     public void run() {
         try {
-            serverSocket = new ServerSocket(Integer.valueOf(puerto));
+            socketServer = new ServerSocket(Integer.valueOf(puerto));
             ventana.addServidorIniciado();
             while (true) {
-                Socket socket = serverSocket.accept();
+                Socket socket = socketServer.accept();
                 System.out.println("Nueva conexión entrante: " + socket);
                 HiloCliente h = new HiloCliente(socket, this);               
                 h.start();
@@ -43,7 +44,7 @@ public class Servidor extends Thread {
         return usuariosConectados;
     }
 
-    void agregarLog(String texto) {
-        ventana.agregarLog(texto);
+    void log(String texto) {
+        ventana.log(texto);
     }
 }
