@@ -10,10 +10,19 @@ import javax.swing.JOptionPane;
  * Extiende la clase {@link Thread}.
  */
 public class Servidor extends Thread {
+    /** Socket del servidor que escucha conexiones entrantes. */
     private ServerSocket socketServer;
+
+    /** Lista de hilos de cliente conectados al servidor. */
     LinkedList<HiloCliente> clientes;
+
+    /** Ventana gráfica asociada al servidor. */
     private final VentanaS ventana;
+
+    /** Puerto en el que se inicia el servidor. */
     private final String puerto;
+
+    /** Diferenciador para generar identificadores únicos para los clientes. */
     static int diferenciador;
 
     /**
