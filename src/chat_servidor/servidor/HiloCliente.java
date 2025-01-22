@@ -1,19 +1,30 @@
 package chat_servidor.servidor;
 
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
 
+/**
+ * Clase que representa un hilo encargado de manejar la conexión con un cliente en el servidor de chat.
+ * Extiende la clase {@link Thread}.
+ */
 public class HiloCliente extends Thread {
-    private final Socket socket;    
+    private final Socket socket;
     private ObjectOutputStream oos;
-    private ObjectInputStream ois;            
+    private ObjectInputStream ois;
     private final Servidor server;
     private String id;
     private boolean listening;
 
+    /**
+     * Constructor que inicializa el hilo para manejar la comunicación con un cliente.
+     *
+     * @param socket Socket de comunicación con el cliente.
+     * @param server Instancia del servidor que administra este hilo.
+     */
     public HiloCliente(Socket socket, Servidor server) {
         this.server = server;
         this.socket = socket;
@@ -25,6 +36,9 @@ public class HiloCliente extends Thread {
         }
     }
 
+    /**
+     * Desconecta al cliente cerrando el socket y deteniendo la escucha.
+     */
     public void desconectar() {
         try {
             socket.close();
@@ -34,6 +48,10 @@ public class HiloCliente extends Thread {
         }
     }
 
+    /**
+     * Método principal del hilo que se ejecuta al iniciar el hilo.
+     * Maneja la escucha y la comunicación con el cliente.
+     */
     public void run() {
         try {
             listening();
@@ -43,7 +61,10 @@ public class HiloCliente extends Thread {
         desconectar();
     }
 
-    public void listening() {        
+    /**
+     * Inicia el bucle de escucha para recibir mensajes del cliente.
+     */
+    public void listening() {
         listening = true;
         while (listening) {
             try {
@@ -51,12 +72,17 @@ public class HiloCliente extends Thread {
                 if (aux instanceof LinkedList) {
                     ejecutar((LinkedList<String>) aux);
                 }
-            } catch (Exception e) {                    
+            } catch (Exception e) {
                 System.err.println("Error al leer lo enviado por el cliente.");
             }
         }
     }
 
+    /**
+     * Ejecuta acciones basadas en los mensajes recibidos del cliente.
+     *
+     * @param lista Lista de cadenas que representa el mensaje recibido.
+     */
     public void ejecutar(LinkedList<String> lista) {
         String tipo = lista.get(0);
         switch (tipo) {
@@ -65,7 +91,7 @@ public class HiloCliente extends Thread {
                 break;
             case "SOLICITUD_DESCONEXION":
                 confirmarDesConexion();
-                break;                
+                break;
             case "MENSAJE":
                 String destinatario = lista.get(2);
                 server.clientes
@@ -78,14 +104,24 @@ public class HiloCliente extends Thread {
         }
     }
 
+    /**
+     * Envía un mensaje al cliente asociado a este hilo.
+     *
+     * @param lista Lista de cadenas que representa el mensaje a enviar.
+     */
     private void enviarMensaje(LinkedList<String> lista) {
         try {
-            oos.writeObject(lista);            
+            oos.writeObject(lista);
         } catch (Exception e) {
             System.err.println("Error al enviar el objeto al cliente.");
         }
-    }    
+    }
 
+    /**
+     * Confirma la conexión del cliente asignándole un identificador único.
+     *
+     * @param id Identificador proporcionado por el cliente.
+     */
     private void confirmarConexion(String id) {
         Servidor.diferenciador++;
         this.id = Servidor.diferenciador + " - " + id;
@@ -102,24 +138,30 @@ public class HiloCliente extends Thread {
         server.clientes.add(this);
     }
 
+    /**
+     * Obtiene el identificador único del cliente asociado a este hilo.
+     *
+     * @return Identificador del cliente.
+     */
     public String getIdent() {
         return id;
     }
 
+    /**
+     * Confirma la desconexión del cliente y notifica a los demás.
+     */
     private void confirmarDesConexion() {
-        LinkedList<String> auxLista=new LinkedList<>();
+        LinkedList<String> auxLista = new LinkedList<>();
         auxLista.add("USUARIO_DESCONECTADO");
         auxLista.add(this.id);
-        server.log("\nEl cliente \""+this.id+"\" se ha desconectado.");
+        server.log("\nEl cliente \"" + this.id + "\" se ha desconectado.");
         this.desconectar();
-        for(int i=0;i<server.clientes.size();i++){
-            if(server.clientes.get(i).equals(this)){
+        for (int i = 0; i < server.clientes.size(); i++) {
+            if (server.clientes.get(i).equals(this)) {
                 server.clientes.remove(i);
                 break;
             }
         }
-        server.clientes
-                .stream()
-                .forEach(h -> h.enviarMensaje(auxLista));        
+        server.clientes.forEach(h -> h.enviarMensaje(auxLista));
     }
 }
