@@ -12,12 +12,23 @@ import java.util.LinkedList;
  * Extiende la clase {@link Thread}.
  */
 public class HiloCliente extends Thread {
-    private final Socket socket;
-    private ObjectOutputStream oos;
-    private ObjectInputStream ois;
-    private final Servidor server;
-    private String id;
-    private boolean listening;
+        /** Socket de comunicación con el cliente. */
+        private final Socket socket;
+
+        /** Flujo de salida para enviar objetos al cliente. */
+        private ObjectOutputStream oos;
+    
+        /** Flujo de entrada para recibir objetos del cliente. */
+        private ObjectInputStream ois;
+    
+        /** Instancia del servidor al que pertenece este hilo. */
+        private final Servidor server;
+    
+        /** Identificador único del cliente. */
+        private String id;
+    
+        /** Indicador para controlar si el hilo sigue escuchando mensajes del cliente. */
+        private boolean listening;
 
     /**
      * Constructor que inicializa el hilo para manejar la comunicación con un cliente.

@@ -8,10 +8,14 @@ import javax.swing.*;
  * Extiende la clase {@link JFrame}.
  */
 public class VentanaS extends JFrame {
+    /** Puerto por defecto para la conexión del servidor. */
     private final String DEFAULT_PORT = "10101";
-    private final Servidor server;
-    JTextArea txtClientes = new JTextArea();
 
+    /** Instancia del servidor asociado a esta ventana. */
+    private final Servidor server;
+
+    /** Área de texto para mostrar el log del servidor. */
+    JTextArea txtClientes = new JTextArea();
     /**
      * Constructor que inicializa la ventana gráfica del servidor y su configuración.
      */
