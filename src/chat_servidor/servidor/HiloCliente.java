@@ -10,6 +10,12 @@ import java.util.LinkedList;
 /**
  * Clase que representa un hilo encargado de manejar la conexión con un cliente en el servidor de chat.
  * Extiende la clase {@link Thread}.
+ * 
+ * @author Manuel Abalo Rietz
+ * @author Adrián Ces López
+ * @author Pablo Dopazo Suárez
+ * @version 1.0.0
+ * 
  */
 public class HiloCliente extends Thread {
         /** Socket de comunicación con el cliente. */
