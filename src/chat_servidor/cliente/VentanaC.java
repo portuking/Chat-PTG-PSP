@@ -8,41 +8,41 @@ public class VentanaC extends JFrame {
     private final String DEFAULT_PORT = "10101";
     private final String DEFAULT_IP = "127.0.0.1";
     private final Cliente cliente;
-    JComboBox<String> cmbContactos = new JComboBox<>();
-    JTextArea txtHistorial = new JTextArea();
+    JComboBox<String> contactos = new JComboBox<>();
+    JTextArea historial = new JTextArea();
 
     public VentanaC() {
-        initComponents();
+        initVentanaC();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        String[] ip_puerto_nombre = getIP_Puerto_Nombre();
-        String ip = ip_puerto_nombre[0];
-        String puerto = ip_puerto_nombre[1];
-        String nombre = ip_puerto_nombre[2];
+        String[] ipPuerto = getIPPuerto();
+        String ip = ipPuerto[0];
+        String puerto = ipPuerto[1];
+        String nombre = ipPuerto[2];
         cliente = new Cliente(this, ip, Integer.valueOf(puerto), nombre);
     }
 
-    private void initComponents() {
+    private void initVentanaC() {
         JScrollPane jScrollPane1 = new JScrollPane();
-        JTextField txtMensaje = new JTextField();
+        JTextField Mensaje = new JTextField();
         JButton btnEnviar = new JButton("Enviar");
         JLabel jLabel1 = new JLabel("Destinatario:");
-        
+
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        txtHistorial.setEditable(false);
-        txtHistorial.setColumns(20);
-        txtHistorial.setRows(5);
-        jScrollPane1.setViewportView(txtHistorial);
+        historial.setEditable(false);
+        historial.setColumns(20);
+        historial.setRows(5);
+        jScrollPane1.setViewportView(historial);
 
         btnEnviar.addActionListener(evt -> {
-            if (cmbContactos.getSelectedItem() == null) {
+            if (contactos.getSelectedItem() == null) {
                 JOptionPane.showMessageDialog(this, "Seleccione un destinatario.");
                 return;
             }
-            String cliente_receptor = cmbContactos.getSelectedItem().toString();
-            String mensaje = txtMensaje.getText();
-            cliente.enviarMensaje(cliente_receptor, mensaje);
-            txtHistorial.append("## Yo -> " + cliente_receptor + " ## : \n" + mensaje + "\n");
-            txtMensaje.setText("");
+            String cliente_receptor = contactos.getSelectedItem().toString();
+            String mensaje = Mensaje.getText();
+            cliente.mensajear(cliente_receptor, mensaje);
+            historial.append("## Yo -> " + cliente_receptor + " ## : \n" + mensaje + "\n");
+            Mensaje.setText("");
         });
 
         GroupLayout layout = new GroupLayout(getContentPane());
@@ -52,9 +52,9 @@ public class VentanaC extends JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cmbContactos, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(contactos, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addComponent(txtMensaje)
+                .addComponent(Mensaje)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnEnviar))
         );
@@ -63,21 +63,17 @@ public class VentanaC extends JFrame {
             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel1)
-                .addComponent(cmbContactos))
+                .addComponent(contactos))
             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(txtMensaje)
+                .addComponent(Mensaje)
                 .addComponent(btnEnviar))
         );
 
         pack();
     }
 
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(() -> new VentanaC().setVisible(true));
-    }
-
-    private String[] getIP_Puerto_Nombre() {
+    private String[] getIPPuerto() {
         String[] s = new String[3];
         JTextField ip = new JTextField(DEFAULT_IP);
         JTextField puerto = new JTextField(DEFAULT_PORT);
@@ -103,11 +99,11 @@ public class VentanaC extends JFrame {
     }
 
     void addContacto(String contacto) {
-        cmbContactos.addItem(contacto);
+        contactos.addItem(contacto);
     }
 
     void addMensaje(String emisor, String mensaje) {
-        txtHistorial.append("##### " + emisor + " ##### : \n" + mensaje + "\n");
+        historial.append("##### " + emisor + " ##### : \n" + mensaje + "\n");
     }
 
     void sesionIniciada(String identificador) {
@@ -115,11 +111,15 @@ public class VentanaC extends JFrame {
     }
 
     void eliminarContacto(String identificador) {
-        for (int i = 0; i < cmbContactos.getItemCount(); i++) {
-            if (cmbContactos.getItemAt(i).equals(identificador)) {
-                cmbContactos.removeItemAt(i);
+        for (int i = 0; i < contactos.getItemCount(); i++) {
+            if (contactos.getItemAt(i).equals(identificador)) {
+                contactos.removeItemAt(i);
                 return;
             }
         }
+    }
+    
+    public static void main(String args[]) {
+        java.awt.EventQueue.invokeLater(() -> new VentanaC().setVisible(true));
     }
 }

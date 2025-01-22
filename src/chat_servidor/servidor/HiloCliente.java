@@ -87,8 +87,8 @@ public class HiloCliente extends Thread {
     }    
 
     private void confirmarConexion(String id) {
-        Servidor.correlativo++;
-        this.id = Servidor.correlativo + " - " + id;
+        Servidor.diferenciador++;
+        this.id = Servidor.diferenciador + " - " + id;
         LinkedList<String> lista = new LinkedList<>();
         lista.add("CONEXION_ACEPTADA");
         lista.add(this.id);

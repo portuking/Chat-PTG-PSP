@@ -40,7 +40,7 @@ public class Servidor extends Thread {
 
     LinkedList<String> getUsuariosConectados() {
         LinkedList<String> usuariosConectados = new LinkedList<>();
-        clientes.forEach(c -> usuariosConectados.add(c.getIdentificador()));
+        clientes.forEach(c -> usuariosConectados.add(c.getIdent()));
         return usuariosConectados;
     }
 
