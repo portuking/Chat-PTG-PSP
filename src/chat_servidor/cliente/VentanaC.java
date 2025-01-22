@@ -8,8 +8,12 @@ public class VentanaC extends JFrame {
     private final String DEFAULT_PORT = "10101";
     private final String DEFAULT_IP = "127.0.0.1";
     private final Cliente cliente;
-    JComboBox<String> contactos = new JComboBox<>();
-    JTextArea historial = new JTextArea();
+    private javax.swing.JButton btnEnviar;
+    private javax.swing.JComboBox contactos;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea historial;
+    private javax.swing.JTextField txtMensaje;
 
     public VentanaC() {
         initVentanaC();
@@ -22,55 +26,93 @@ public class VentanaC extends JFrame {
     }
 
     private void initVentanaC() {
-        JScrollPane jScrollPane1 = new JScrollPane();
-        JTextField Mensaje = new JTextField();
-        JButton btnEnviar = new JButton("Enviar");
-        JLabel jLabel1 = new JLabel("Destinatario:");
+        jScrollPane1 = new javax.swing.JScrollPane();
+        historial = new javax.swing.JTextArea();
+        txtMensaje = new javax.swing.JTextField();
+        contactos = new javax.swing.JComboBox();
+        btnEnviar = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
+
         historial.setEditable(false);
         historial.setColumns(20);
         historial.setRows(5);
         jScrollPane1.setViewportView(historial);
 
-        btnEnviar.addActionListener(evt -> {
-            if (contactos.getSelectedItem() == null) {
-                JOptionPane.showMessageDialog(this, "Seleccione un destinatario.");
-                return;
-            }
-            String cliente_receptor = contactos.getSelectedItem().toString();
-            String mensaje = Mensaje.getText();
-            cliente.mensajear(cliente_receptor, mensaje);
-            historial.append("## Yo -> " + cliente_receptor + " ## : \n" + mensaje + "\n");
-            Mensaje.setText("");
-        });
+        btnEnviar.setText("Enviar");
+        btnEnviar.addActionListener(evt -> btnEnviarActionPerformed(evt));
 
-        GroupLayout layout = new GroupLayout(getContentPane());
+        jLabel1.setText("Destinatario:");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel1)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(contactos, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(Mensaje)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnEnviar))
-        );
-        layout.setVerticalGroup(layout.createSequentialGroup()
-            .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(jLabel1)
-                .addComponent(contactos))
-            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(Mensaje)
-                .addComponent(btnEnviar))
-        );
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane1)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout
+                                                .createSequentialGroup()
+                                                .addComponent(jLabel1)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(contactos, javax.swing.GroupLayout.PREFERRED_SIZE, 198,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(txtMensaje)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnEnviar)))
+                                .addContainerGap()));
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(contactos, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel1))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(txtMensaje, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(btnEnviar))
+                                .addContainerGap()));
 
         pack();
+    }
+
+    private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {
+        if (contactos.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(this, "Debe escoger un destinatario válido.");
+            return;
+        }
+        String cliente_receptor = contactos.getSelectedItem().toString();
+        String mensaje = txtMensaje.getText();
+        cliente.mensajear(cliente_receptor, mensaje);
+        historial.append("## Yo -> " + cliente_receptor + " ## : \n" + mensaje + "\n");
+        txtMensaje.setText("");
+    }
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {
+        cliente.desconexionCliente();
+    }
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {
     }
 
     private String[] getIPPuerto() {
