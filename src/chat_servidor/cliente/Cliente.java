@@ -76,8 +76,14 @@ public class Cliente extends Thread {
         try {
             while (listening) {
                 Object aux = objectInputStream.readObject();
-                if (aux instanceof LinkedList) {
-                    ejecutar((LinkedList<String>) aux);
+                if (aux != null) {
+                    if (aux instanceof LinkedList) {
+                        ejecutar((LinkedList<String>)aux);
+                    } else {
+                        System.err.println("Se recibió un Objeto desconocido a través del socket");
+                    }
+                } else {
+                    System.err.println("Se recibió un null a través del socket");
                 }
             }
         } catch (Exception e) {
@@ -104,6 +110,8 @@ public class Cliente extends Thread {
                 break;
             case "MENSAJE":
                 ventanaCliente.addMensaje(lista.get(1), lista.get(3));
+                break;
+            default:
                 break;
         }
     }
