@@ -6,6 +6,12 @@ import javax.swing.*;
 /**
  * Clase que representa la ventana principal de la interfaz gráfica del servidor.
  * Extiende la clase {@link JFrame}.
+ * 
+ * @author Manuel Abalo Rietz
+ * @author Adrián Ces López
+ * @author Pablo Dopazo Suárez
+ * @version 1.0.0
+ * 
  */
 public class VentanaS extends JFrame {
     /** Puerto por defecto para la conexión del servidor. */

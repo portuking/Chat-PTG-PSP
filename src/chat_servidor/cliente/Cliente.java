@@ -6,16 +6,43 @@ import java.net.UnknownHostException;
 import java.util.LinkedList;
 import javax.swing.JOptionPane;
 
+/**
+ * Clase Cliente que representa un cliente en un sistema de chat.
+ * Se encarga de la comunicación entre el cliente y el servidor a través de sockets.
+ * 
+ * @author Manuel Abalo Rietz
+ * @author Adrián Ces López
+ * @author Pablo Dopazo Suárez
+ * @version 1.0.0
+ * 
+ */
 public class Cliente extends Thread {
+
+    /** Socket utilizado para la comunicación con el servidor. */
     private Socket socket;
+    /** Flujo de salida para enviar datos al servidor. */
     private ObjectOutputStream objectOutputStream;
+    /** Flujo de entrada para recibir datos del servidor. */
     private ObjectInputStream objectInputStream;
+    /** Referencia a la ventana gráfica del cliente. */
     private final VentanaC ventanaCliente;
+    /** Identificador único del cliente. */
     private String idCliente;
+    /** Indicador de si el cliente debe seguir escuchando mensajes del servidor. */
     private boolean listening;
+    /** Dirección IP del servidor. */
     private final String host;
+    /** Puerto del servidor. */
     private final int puerto;
 
+    /**
+     * Constructor de Cliente.
+     * 
+     * @param ventana Instancia de la ventana asociada al cliente.
+     * @param host Dirección IP del servidor.
+     * @param puerto Puerto del servidor.
+     * @param nombre Nombre del cliente.
+     */
     public Cliente(VentanaC ventana, String host, Integer puerto, String nombre) {
         this.ventanaCliente = ventana;
         this.host = host;
@@ -25,6 +52,10 @@ public class Cliente extends Thread {
         this.start();
     }
 
+    /**
+     * Método principal del hilo, establece la conexión con el servidor
+     * y maneja la comunicación.
+     */
     public void run() {
         try {
             socket = new Socket(host, puerto);
@@ -34,20 +65,19 @@ public class Cliente extends Thread {
             this.conexionCliente(idCliente);
             this.escuchar();
         } catch (UnknownHostException ex) {
-            JOptionPane.showMessageDialog(ventanaCliente, "Conexión rehusada, servidor desconocido,\n"
-                                                        + "puede que haya ingresado una ip incorrecta\n"
-                                                        + "o que el servidor no este corriendo.\n"
-                                                        + "Esta aplicación se cerrará.");
+            JOptionPane.showMessageDialog(ventanaCliente, "Conexión rehusada, servidor desconocido.\n"
+                    + "Puede que la IP sea incorrecta o el servidor no esté corriendo.");
             System.exit(0);
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(ventanaCliente, "Conexión rehusada, error de Entrada/Salida,\n"
-                                                 + "puede que haya ingresado una ip o un puerto\n"
-                                                 + "incorrecto, o que el servidor no este corriendo.\n"
-                                                 + "Esta aplicación se cerrará.");
+            JOptionPane.showMessageDialog(ventanaCliente, "Conexión rehusada, error de Entrada/Salida.\n"
+                    + "Puede que la IP o el puerto sean incorrectos.");
             System.exit(0);
         }
     }
 
+    /**
+     * Desconecta al cliente del servidor y cierra los flujos de comunicación.
+     */
     public void desconectar() {
         try {
             objectOutputStream.close();
@@ -59,6 +89,12 @@ public class Cliente extends Thread {
         }
     }
 
+    /**
+     * Envía un mensaje a otro cliente a través del servidor.
+     * 
+     * @param cliente_receptor Nombre del cliente receptor.
+     * @param mensaje Mensaje a enviar.
+     */
     public void mensajear(String cliente_receptor, String mensaje) {
         LinkedList<String> lista = new LinkedList<>();
         lista.add("MENSAJE");
@@ -72,18 +108,17 @@ public class Cliente extends Thread {
         }
     }
 
+    /**
+     * Escucha mensajes provenientes del servidor y los procesa.
+     */
     public void escuchar() {
         try {
             while (listening) {
                 Object aux = objectInputStream.readObject();
-                if (aux != null) {
-                    if (aux instanceof LinkedList) {
-                        ejecutar((LinkedList<String>)aux);
-                    } else {
-                        System.err.println("Se recibió un Objeto desconocido a través del socket");
-                    }
+                if (aux != null && aux instanceof LinkedList) {
+                    ejecutar((LinkedList<String>) aux);
                 } else {
-                    System.err.println("Se recibió un null a través del socket");
+                    System.err.println("Se recibió un objeto desconocido o nulo.");
                 }
             }
         } catch (Exception e) {
@@ -92,6 +127,11 @@ public class Cliente extends Thread {
         }
     }
 
+    /**
+     * Ejecuta acciones en función del tipo de mensaje recibido.
+     * 
+     * @param lista Lista de parámetros del mensaje.
+     */
     public void ejecutar(LinkedList<String> lista) {
         String tipo = lista.get(0);
         switch (tipo) {
@@ -116,6 +156,11 @@ public class Cliente extends Thread {
         }
     }
 
+    /**
+     * Solicita la conexión del cliente al servidor.
+     * 
+     * @param identificador Identificador del cliente.
+     */
     private void conexionCliente(String identificador) {
         LinkedList<String> lista = new LinkedList<>();
         lista.add("SOLICITUD_CONEXION");
@@ -127,6 +172,9 @@ public class Cliente extends Thread {
         }
     }
 
+    /**
+     * Solicita la desconexión del cliente al servidor.
+     */
     void desconexionCliente() {
         LinkedList<String> lista = new LinkedList<>();
         lista.add("SOLICITUD_DESCONEXION");
@@ -138,6 +186,11 @@ public class Cliente extends Thread {
         }
     }
 
+    /**
+     * Obtiene el identificador del cliente.
+     * 
+     * @return Identificador del cliente.
+     */
     String getIdCliente() {
         return idCliente;
     }

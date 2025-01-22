@@ -8,6 +8,12 @@ import javax.swing.JOptionPane;
 /**
  * Clase que representa el servidor principal que maneja las conexiones de los clientes.
  * Extiende la clase {@link Thread}.
+ * 
+ * @author Manuel Abalo Rietz
+ * @author Adrián Ces López
+ * @author Pablo Dopazo Suárez
+ * @version 1.0.0
+ * 
  */
 public class Servidor extends Thread {
     /** Socket del servidor que escucha conexiones entrantes. */
